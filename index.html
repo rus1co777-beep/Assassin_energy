@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="theme-color" content="#050508">
+    <title>AE — Assassin Energy</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #050508;
+            --bg2: #0a0a12;
+            --bg3: #12121f;
+            --accent: #00ccff;
+            --accent-glow: rgba(0, 204, 255, 0.75);
+            --accent2: #0077ff;
+            --accent3: #ff3366;
+            --text: #e0f7ff;
+            --muted: #52667a;
+            --card: #0d1117;
+            --border: rgba(0, 204, 255, 0.2);
+            --radius: 16px;
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Syne', sans-serif;
+            min-height: 100dvh;
+            overflow-x: hidden;
+            padding-bottom: 90px;
+        }
+
+        /* HEADER + ЛОГОТИП */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 500;
+            background: rgba(5,5,8,0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(145deg, #0a0a12, #1a1a2e);
+            border: 3px solid #00ccff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 30px rgba(0,204,255,0.9), inset 0 0 20px rgba(0,204,255,0.4);
+        }
+
+        .logo-icon::before {
+            content: "👤";
+            font-size: 32px;
+            filter: drop-shadow(0 0 15px #00ccff);
+        }
+
+        .logo-text {
+            font-size: 21px;
+            font-weight: 800;
+            letter-spacing: -1.1px;
+            text-transform: uppercase;
+        }
+
+        .logo-text span {
+            color: #00ccff;
+            text-shadow: 0 0 15px #00ccff, 0 0 30px rgba(0,204,255,0.7);
+        }
+
+        #map { height: 380px; width: 100%; background: #0a0a12; }
+
+        .content { padding: 0 16px; }
+        .section-header { padding: 20px 0 12px; font-size: 19px; font-weight: 800; }
+
+        .spots-scroll {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 20px;
+            scrollbar-width: none;
+        }
+
+        .spot-card {
+            flex: 0 0 210px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .spot-card:active { transform: scale(0.95); }
+
+        .spot-badge {
+            font-size: 9px;
+            font-family: var(--mono);
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 6px;
+            background: rgba(0,204,255,0.12);
+            color: var(--accent);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+
+        .add-btn {
+            width: 100%;
+            background: rgba(0,204,255,0.08);
+            border: 1.5px dashed var(--accent);
+            border-radius: var(--radius);
+            padding: 18px;
+            color: var(--accent);
+            font-weight: 800;
+            text-transform: uppercase;
+            cursor: pointer;
+            margin: 20px 0;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-top: 20px;
+        }
+        .stat-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 20px 12px;
+            border-radius: var(--radius);
+            text-align: center;
+        }
+        .stat-val { font-size: 27px; font-weight: 800; color: var(--accent); }
+        .stat-label { font-size: 10px; font-family: var(--mono); color: var(--muted); text-transform: uppercase; margin-top: 5px; }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: rgba(5,5,8,0.97);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
+            display: flex;
+            padding: 10px 0 calc(12px + env(safe-area-inset-bottom));
+            z-index: 1000;
+        }
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            opacity: 0.55;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        .nav-item.active { opacity: 1; color: var(--accent); }
+        .nav-icon { font-size: 26px; }
+        .nav-lbl {
+            font-size: 9px;
+            font-family: var(--mono);
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .view { display: none; }
+        .view.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        .toast {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent);
+            color: #050508;
+            padding: 13px 26px;
+            border-radius: 8px;
+            font-weight: 800;
+            z-index: 2000;
+            opacity: 0;
+            transition: 0.35s;
+            box-shadow: 0 0 25px var(--accent-glow);
+            text-transform: uppercase;
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="logo">
+        <div class="logo-icon"></div>
+        <div class="logo-text">ASSASSIN<br><span>ENERGY</span></div>
+    </div>
+    <div id="top-batt" style="font-family:var(--mono); font-size:12px; color:var(--accent); font-weight:700;">--% ⚡</div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<div class="view active" id="view-map">
+    <div id="map"></div>
+    <div class="content">
+        <div class="section-header">Ближайшие узлы</div>
+        <div class="spots-scroll" id="spots-list"></div>
+        <button class="add-btn" onclick="showToast('Кликни на карту для фиксации точки')">⚡ Засечь новый узел</button>
+    </div>
+</div>
+
+<div class="view" id="view-fitness">
+    <div class="content">
+        <div class="section-header">🧬 Биометрия Агента</div>
+        <div class="stat-grid">
+            <div class="stat-card"><span class="stat-val" id="fit-batt">--%</span><span class="stat-label">Заряд</span></div>
+            <div class="stat-card"><span class="stat-val" id="steps">0</span><span class="stat-label">Шаги</span></div>
+            <div class="stat-card"><span class="stat-val">120 bpm</span><span class="stat-label">Пульс</span></div>
+            <div class="stat-card"><span class="stat-val" id="net-status">Online</span><span class="stat-label">Связь</span></div>
+        </div>
+    </div>
+</div>
+
+<div class="view" id="view-chat">
+    <div class="content">
+        <div class="section-header">☰ Канал связи</div>
+        <div style="background:var(--bg2); border:1px solid var(--border); border-radius:16px; height:380px; padding:15px; font-family:var(--mono); font-size:12px; color:var(--accent); overflow-y:auto;" id="chat-box">
+            <span style="color:var(--muted)">[SYS]</span> Шифрование активно...<br>
+            <span style="color:var(--muted)">[SYS]</span> Агент в сети.
+        </div>
+    </div>
+</div>
+
+<div class="view" id="view-profile">
+    <div class="content" style="text-align:center; padding-top:40px;">
+        <div style="width:110px; height:110px; border:3px solid var(--accent); border-radius:50%; margin:0 auto; display:flex; align-items:center; justify-content:center; box-shadow:0 0 30px var(--accent-glow); background:var(--bg2);">
+            <span style="font-size:48px;">👤</span>
+        </div>
+        <h2 style="margin-top:20px; letter-spacing:2px;">АГЕНТ БРАТАН</h2>
+        <p style="color:var(--accent); font-family:var(--mono);">Level 1 • Elite Assassin</p>
+    </div>
+</div>
+
+<div class="bottom-nav">
+    <div class="nav-item active" onclick="switchView('map', this)">🗺️<div class="nav-lbl">Сетка</div></div>
+    <div class="nav-item" onclick="switchView('fitness', this)">🧬<div class="nav-lbl">Био</div></div>
+    <div class="nav-item" onclick="switchView('chat', this)">☰<div class="nav-lbl">Чат</div></div>
+    <div class="nav-item" onclick="switchView('profile', this)">👤<div class="nav-lbl">Агент</div></div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    // Данные точек
+    let spots = JSON.parse(localStorage.getItem('ae_nodes')) || [
+        {name: "Alpha HQ", lat: 55.751, lng: 37.618}
+    ];
+
+    const map = L.map('map', { zoomControl: true, attributionControl: false }).setView([55.752, 37.615], 14);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
+
+    function render() {
+        const list = document.getElementById('spots-list');
+        list.innerHTML = '';
+
+        // Очистка старых маркеров
+        map.eachLayer(layer => {
+            if (layer instanceof L.Marker) map.removeLayer(layer);
+        });
+
+        spots.forEach(s => {
+            L.marker([s.lat, s.lng], {
+                icon: L.divIcon({ className: '', iconSize: [14, 14], html: `<div style="width:14px;height:14px;border-radius:50%;background:#00ccff;border:2px solid #fff;box-shadow:0 0 12px #00ccff;"></div>` })
+            }).addTo(map);
+
+            list.innerHTML += `
+                <div class="spot-card">
+                    <div class="spot-badge">АКТИВЕН</div>
+                    <div style="font-weight:700;">${s.name}</div>
+                    <div style="font-size:10px; color:var(--muted); margin-top:5px;">
+                        ${s.lat.toFixed(3)}, ${s.lng.toFixed(3)}
+                    </div>
+                </div>`;
+        });
+        localStorage.setItem('ae_nodes', JSON.stringify(spots));
+    }
+
+    setTimeout(render, 600);
+
+    map.on('click', e => {
+        const name = prompt("Название нового узла:", `Node ${spots.length + 1}`);
+        if (name) {
+            spots.push({ name: name, lat: e.latlng.lat, lng: e.latlng.lng });
+            render();
+            showToast('Узел зафиксирован в системе');
+        }
+    });
+
+    function switchView(id, el) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.getElementById('view-' + id).classList.add('active');
+        el.classList.add('active');
+        if (id === 'map') setTimeout(() => map.invalidateSize(), 200);
+    }
+
+    function showToast(m) {
+        const t = document.getElementById('toast');
+        t.textContent = m;
+        t.style.display = 'block';
+        setTimeout(() => t.style.display = 'none', 2500);
+    }
+
+    // Battery
+    if (navigator.getBattery) {
+        navigator.getBattery().then(b => {
+            const update = () => {
+                const val = Math.round(b.level * 100) + '%';
+                document.getElementById('top-batt').textContent = val + ' ⚡';
+                document.getElementById('fit-batt').textContent = val;
+            };
+            b.addEventListener('levelchange', update);
+            update();
+        });
+    }
+
+    // Шагомер
+    let stepCount = parseInt(localStorage.getItem('ae_steps')) || 0;
+    document.getElementById('steps').textContent = stepCount;
+
+    window.addEventListener('devicemotion', e => {
+        const acc = e.accelerationIncludingGravity;
+        if (acc && Math.sqrt(acc.x**2 + acc.y**2 + acc.z**2) > 15) {
+            stepCount++;
+            document.getElementById('steps').textContent = stepCount;
+            localStorage.setItem('ae_steps', stepCount);
+        }
+    });
+</script>
+</body>
+</html>
