@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#050508">
     <title>AE — Assassin Energy</title>
 
@@ -11,206 +11,65 @@
 
     <style>
         :root {
-            --bg: #050508;
-            --bg2: #0a0a12;
-            --bg3: #12121f;
-            --accent: #00ccff;
-            --accent-glow: rgba(0, 204, 255, 0.75);
-            --accent2: #0077ff;
-            --accent3: #ff3366;
-            --text: #e0f7ff;
-            --muted: #52667a;
-            --card: #0d1117;
-            --border: rgba(0, 204, 255, 0.2);
-            --radius: 16px;
+            --bg: #050508; --bg2: #0a0a12; --bg3: #12121f;
+            --accent: #00ccff; --accent-glow: rgba(0, 204, 255, 0.8);
+            --text: #e0f7ff; --muted: #52667a;
+            --card: #0d1117; --border: rgba(0, 204, 255, 0.2);
+            --radius: 16px; --mono: 'Space Mono', monospace;
         }
 
         * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-        body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: 'Syne', sans-serif;
-            min-height: 100dvh;
-            overflow-x: hidden;
-            padding-bottom: 90px;
-        }
+        body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; min-height: 100dvh; padding-bottom: 90px; }
 
-        /* HEADER + ЛОГОТИП */
-        .header {
-            position: sticky;
-            top: 0;
-            z-index: 500;
-            background: rgba(5,5,8,0.95);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border);
-            padding: 12px 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
+        .header { position: sticky; top: 0; z-index: 500; background: rgba(5,5,8,0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; }
+        .logo { display: flex; align-items: center; gap: 12px; }
+        .logo-icon { width: 44px; height: 44px; border: 2.5px solid var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px var(--accent-glow); font-size: 24px; }
+        .logo-text { font-size: 16px; font-weight: 800; text-transform: uppercase; line-height: 1; }
+        .logo-text span { color: var(--accent); }
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        .lang-switch { display: flex; gap: 4px; }
+        .lang-btn { background: none; border: 1px solid var(--border); color: var(--accent); font-size: 10px; padding: 4px 6px; border-radius: 6px; font-family: var(--mono); }
+        .lang-btn.active { background: var(--accent); color: #050508; }
 
-        .logo-icon {
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(145deg, #0a0a12, #1a1a2e);
-            border: 3px solid #00ccff;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 30px rgba(0,204,255,0.9), inset 0 0 20px rgba(0,204,255,0.4);
-        }
-
-        .logo-icon::before {
-            content: "👤";
-            font-size: 32px;
-            filter: drop-shadow(0 0 15px #00ccff);
-        }
-
-        .logo-text {
-            font-size: 21px;
-            font-weight: 800;
-            letter-spacing: -1.1px;
-            text-transform: uppercase;
-        }
-
-        .logo-text span {
-            color: #00ccff;
-            text-shadow: 0 0 15px #00ccff, 0 0 30px rgba(0,204,255,0.7);
-        }
-
-        #map { height: 380px; width: 100%; background: #0a0a12; }
-
+        #map { height: 350px; width: 100%; background: #000; }
         .content { padding: 0 16px; }
-        .section-header { padding: 20px 0 12px; font-size: 19px; font-weight: 800; }
+        .section-header { padding: 20px 0 12px; font-size: 18px; font-weight: 800; text-transform: uppercase; }
 
-        .spots-scroll {
-            display: flex;
-            gap: 12px;
-            overflow-x: auto;
-            padding-bottom: 20px;
-            scrollbar-width: none;
-        }
+        .spots-scroll { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 15px; scrollbar-width: none; }
+        .spot-card { flex: 0 0 200px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+        .spot-badge { font-size: 9px; font-family: var(--mono); padding: 3px 8px; border-radius: 4px; background: rgba(0,204,255,0.1); color: var(--accent); margin-bottom: 8px; display: inline-block; }
 
-        .spot-card {
-            flex: 0 0 210px;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 16px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .spot-card:active { transform: scale(0.95); }
+        .action-btn { width: 100%; background: rgba(0,204,255,0.05); border: 1px solid var(--accent); border-radius: 12px; padding: 14px; color: var(--accent); font-weight: 800; margin-top: 10px; text-transform: uppercase; font-size: 12px; }
 
-        .spot-badge {
-            font-size: 9px;
-            font-family: var(--mono);
-            font-weight: 700;
-            padding: 4px 10px;
-            border-radius: 6px;
-            background: rgba(0,204,255,0.12);
-            color: var(--accent);
-            text-transform: uppercase;
-            margin-bottom: 10px;
-            display: inline-block;
-        }
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .stat-card { background: var(--card); border: 1px solid var(--border); padding: 15px; border-radius: var(--radius); text-align: center; }
+        .stat-val { font-size: 22px; font-weight: 800; color: var(--accent); display: block; }
+        .stat-label { font-size: 9px; font-family: var(--mono); color: var(--muted); text-transform: uppercase; }
 
-        .add-btn {
-            width: 100%;
-            background: rgba(0,204,255,0.08);
-            border: 1.5px dashed var(--accent);
-            border-radius: var(--radius);
-            padding: 18px;
-            color: var(--accent);
-            font-weight: 800;
-            text-transform: uppercase;
-            cursor: pointer;
-            margin: 20px 0;
-        }
-
-        .stat-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-            margin-top: 20px;
-        }
-        .stat-card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            padding: 20px 12px;
-            border-radius: var(--radius);
-            text-align: center;
-        }
-        .stat-val { font-size: 27px; font-weight: 800; color: var(--accent); }
-        .stat-label { font-size: 10px; font-family: var(--mono); color: var(--muted); text-transform: uppercase; margin-top: 5px; }
-
-        .bottom-nav {
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            background: rgba(5,5,8,0.97);
-            backdrop-filter: blur(20px);
-            border-top: 1px solid var(--border);
-            display: flex;
-            padding: 10px 0 calc(12px + env(safe-area-inset-bottom));
-            z-index: 1000;
-        }
-        .nav-item {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            opacity: 0.55;
-            transition: 0.3s;
-            cursor: pointer;
-        }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(5,5,8,0.98); border-top: 1px solid var(--border); display: flex; padding: 10px 0 calc(10px + env(safe-area-inset-bottom)); z-index: 1000; }
+        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; opacity: 0.5; transition: 0.3s; }
         .nav-item.active { opacity: 1; color: var(--accent); }
-        .nav-icon { font-size: 26px; }
-        .nav-lbl {
-            font-size: 9px;
-            font-family: var(--mono);
-            text-transform: uppercase;
-            font-weight: 700;
-        }
+        .nav-lbl { font-size: 9px; font-family: var(--mono); text-transform: uppercase; margin-top: 4px; }
 
         .view { display: none; }
-        .view.active { display: block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .view.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .toast {
-            position: fixed;
-            top: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--accent);
-            color: #050508;
-            padding: 13px 26px;
-            border-radius: 8px;
-            font-weight: 800;
-            z-index: 2000;
-            opacity: 0;
-            transition: 0.35s;
-            box-shadow: 0 0 25px var(--accent-glow);
-            text-transform: uppercase;
-        }
-        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .toast { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: var(--accent); color: #000; padding: 10px 20px; border-radius: 8px; font-weight: 800; z-index: 2000; display: none; font-size: 12px; box-shadow: 0 0 20px var(--accent-glow); }
     </style>
 </head>
 <body>
 
 <div class="header">
     <div class="logo">
-        <div class="logo-icon"></div>
+        <div class="logo-icon">👤</div>
         <div class="logo-text">ASSASSIN<br><span>ENERGY</span></div>
     </div>
-    <div id="top-batt" style="font-family:var(--mono); font-size:12px; color:var(--accent); font-weight:700;">--% ⚡</div>
+    <div class="lang-switch">
+        <button class="lang-btn active" onclick="changeLanguage('ru', this)">RU</button>
+        <button class="lang-btn" onclick="changeLanguage('en', this)">EN</button>
+        <button class="lang-btn" onclick="changeLanguage('es', this)">ES</button>
+    </div>
 </div>
 
 <div id="toast" class="toast"></div>
@@ -218,138 +77,141 @@
 <div class="view active" id="view-map">
     <div id="map"></div>
     <div class="content">
-        <div class="section-header">Ближайшие узлы</div>
+        <div class="section-header" data-text="nearby_nodes">Ближайшие узлы</div>
         <div class="spots-scroll" id="spots-list"></div>
-        <button class="add-btn" onclick="showToast('Кликни на карту для фиксации точки')">⚡ Засечь новый узел</button>
+        <button class="action-btn" onclick="locateMe()" data-text="find_me">📍 Найти меня (GPS)</button>
+        <button class="action-btn" onclick="toggleSatellite()" id="sat-btn" data-text="satellite_view">🛰 Спутниковый вид</button>
     </div>
 </div>
 
 <div class="view" id="view-fitness">
     <div class="content">
-        <div class="section-header">🧬 Биометрия Агента</div>
+        <div class="section-header" data-text="biometrics">🧬 Биометрия Агента</div>
         <div class="stat-grid">
-            <div class="stat-card"><span class="stat-val" id="fit-batt">--%</span><span class="stat-label">Заряд</span></div>
-            <div class="stat-card"><span class="stat-val" id="steps">0</span><span class="stat-label">Шаги</span></div>
-            <div class="stat-card"><span class="stat-val">120 bpm</span><span class="stat-label">Пульс</span></div>
-            <div class="stat-card"><span class="stat-val" id="net-status">Online</span><span class="stat-label">Связь</span></div>
+            <div class="stat-card"><span class="stat-val" id="fit-batt">--%</span><span class="stat-label" data-text="device_charge">Заряд устройства</span></div>
+            <div class="stat-card"><span class="stat-val" id="steps">0</span><span class="stat-label" data-text="steps_today">Шаги сегодня</span></div>
+            <div class="stat-card"><span class="stat-val">120 bpm</span><span class="stat-label" data-text="pulse">Пульс ассасина</span></div>
+            <div class="stat-card"><span class="stat-val" id="net-status">Online</span><span class="stat-label" data-text="connection_status">Статус связи</span></div>
         </div>
     </div>
 </div>
 
 <div class="view" id="view-chat">
     <div class="content">
-        <div class="section-header">☰ Канал связи</div>
-        <div style="background:var(--bg2); border:1px solid var(--border); border-radius:16px; height:380px; padding:15px; font-family:var(--mono); font-size:12px; color:var(--accent); overflow-y:auto;" id="chat-box">
-            <span style="color:var(--muted)">[SYS]</span> Шифрование активно...<br>
-            <span style="color:var(--muted)">[SYS]</span> Агент в сети.
+        <div class="section-header" data-text="encrypted_channel">☰ Шифрованный канал</div>
+        <div id="chat-box" style="background:var(--bg2); border:1px solid var(--border); border-radius:16px; height:350px; padding:15px; font-family:var(--mono); font-size:11px; color:var(--accent); overflow-y:auto;">
+            [SYS]: Шифрование активно...<br>
+            [SYS]: Агент в секторе HQ.
         </div>
     </div>
 </div>
 
 <div class="view" id="view-profile">
     <div class="content" style="text-align:center; padding-top:40px;">
-        <div style="width:110px; height:110px; border:3px solid var(--accent); border-radius:50%; margin:0 auto; display:flex; align-items:center; justify-content:center; box-shadow:0 0 30px var(--accent-glow); background:var(--bg2);">
-            <span style="font-size:48px;">👤</span>
-        </div>
-        <h2 style="margin-top:20px; letter-spacing:2px;">АГЕНТ БРАТАН</h2>
-        <p style="color:var(--accent); font-family:var(--mono);">Level 1 • Elite Assassin</p>
+        <div style="width:100px; height:100px; border:2px solid var(--accent); border-radius:50%; margin:0 auto; display:flex; align-items:center; justify-content:center; font-size:40px; box-shadow:0 0 20px var(--accent-glow);">👤</div>
+        <h2 style="margin-top:20px;" data-text="agent_name">Агент Братан</h2>
+        <p style="color:var(--accent); font-family:var(--mono);" data-text="agent_level">Level 1 • Elite Assassin</p>
     </div>
 </div>
 
 <div class="bottom-nav">
-    <div class="nav-item active" onclick="switchView('map', this)">🗺️<div class="nav-lbl">Сетка</div></div>
-    <div class="nav-item" onclick="switchView('fitness', this)">🧬<div class="nav-lbl">Био</div></div>
-    <div class="nav-item" onclick="switchView('chat', this)">☰<div class="nav-lbl">Чат</div></div>
-    <div class="nav-item" onclick="switchView('profile', this)">👤<div class="nav-lbl">Агент</div></div>
+    <div class="nav-item active" onclick="switchView('map', this)">🗺️<div class="nav-lbl" data-text="map">Сетка</div></div>
+    <div class="nav-item" onclick="switchView('fitness', this)">🧬<div class="nav-lbl" data-text="bio">Био</div></div>
+    <div class="nav-item" onclick="switchView('chat', this)">☰<div class="nav-lbl" data-text="chat">Чат</div></div>
+    <div class="nav-item" onclick="switchView('profile', this)">👤<div class="nav-lbl" data-text="agent">Агент</div></div>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    // Данные точек
-    let spots = JSON.parse(localStorage.getItem('ae_nodes')) || [
-        {name: "Alpha HQ", lat: 55.751, lng: 37.618}
-    ];
+const translations = {
+    ru: { nearby_nodes: "Ближайшие узлы", find_me: "📍 Найти меня (GPS)", satellite_view: "🛰 Спутниковый вид", dark_view: "🏙 Темная карта", biometrics: "🧬 Биометрия Агента", device_charge: "Заряд устройства", steps_today: "Шаги сегодня", pulse: "Пульс ассасина", connection_status: "Статус связи", encrypted_channel: "☰ Шифрованный канал", agent_name: "Агент Братан", agent_level: "Level 1 • Elite Assassin", map: "Сетка", bio: "Био", chat: "Чат", agent: "Агент", loc_found: "Местоположение найдено", loc_err: "Ошибка GPS" },
+    en: { nearby_nodes: "Nearby Nodes", find_me: "📍 Find My GPS", satellite_view: "🛰 Satellite View", dark_view: "🏙 Dark Mode", biometrics: "🧬 Biometrics", device_charge: "Battery", steps_today: "Steps", pulse: "Heart Rate", connection_status: "Connection", encrypted_channel: "☰ Secure Chat", agent_name: "Agent Bratan", agent_level: "Level 1 • Elite", map: "Grid", bio: "Bio", chat: "Chat", agent: "Profile", loc_found: "Location locked", loc_err: "GPS Error" },
+    es: { nearby_nodes: "Nodos cercanos", find_me: "📍 Ubicarme", satellite_view: "🛰 Satélite", dark_view: "🏙 Mapa oscuro", biometrics: "🧬 Biometría", device_charge: "Carga", steps_today: "Pasos", pulse: "Pulso", connection_status: "Estado", encrypted_channel: "☰ Chat Seguro", agent_name: "Agente Bratan", agent_level: "Nivel 1 • Élite", map: "Red", bio: "Bio", chat: "Chat", agent: "Agente", loc_found: "Ubicación fijada", loc_err: "Error de GPS" }
+};
 
-    const map = L.map('map', { zoomControl: true, attributionControl: false }).setView([55.752, 37.615], 14);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
+let currentLang = 'ru';
+function changeLanguage(lang, btn) {
+    currentLang = lang;
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('[data-text]').forEach(el => {
+        el.textContent = translations[lang][el.getAttribute('data-text')] || el.textContent;
+    });
+}
 
-    function render() {
-        const list = document.getElementById('spots-list');
-        list.innerHTML = '';
+const map = L.map('map', { zoomControl: false, attributionControl: false }).setView([55.752, 37.615], 14);
+const darkLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
+const satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}');
 
-        // Очистка старых маркеров
-        map.eachLayer(layer => {
-            if (layer instanceof L.Marker) map.removeLayer(layer);
-        });
+function toggleSatellite() {
+    const btn = document.getElementById('sat-btn');
+    if (map.hasLayer(satLayer)) {
+        map.removeLayer(satLayer);
+        btn.textContent = translations[currentLang].satellite_view;
+    } else {
+        satLayer.addTo(map);
+        btn.textContent = translations[currentLang].dark_view;
+    }
+}
 
-        spots.forEach(s => {
-            L.marker([s.lat, s.lng], {
-                icon: L.divIcon({ className: '', iconSize: [14, 14], html: `<div style="width:14px;height:14px;border-radius:50%;background:#00ccff;border:2px solid #fff;box-shadow:0 0 12px #00ccff;"></div>` })
-            }).addTo(map);
+function locateMe() {
+    map.locate({setView: true, maxZoom: 16});
+}
+map.on('locationfound', e => {
+    L.circle(e.latlng, {radius: e.accuracy, color: '#00ccff'}).addTo(map);
+    L.marker(e.latlng).addTo(map).bindPopup("You").openPopup();
+    showToast(translations[currentLang].loc_found);
+});
 
-            list.innerHTML += `
-                <div class="spot-card">
-                    <div class="spot-badge">АКТИВЕН</div>
-                    <div style="font-weight:700;">${s.name}</div>
-                    <div style="font-size:10px; color:var(--muted); margin-top:5px;">
-                        ${s.lat.toFixed(3)}, ${s.lng.toFixed(3)}
-                    </div>
-                </div>`;
-        });
+let spots = JSON.parse(localStorage.getItem('ae_nodes')) || [{name: "Alpha HQ", lat: 55.751, lng: 37.618}];
+function render() {
+    const list = document.getElementById('spots-list');
+    list.innerHTML = '';
+    spots.forEach(s => {
+        L.marker([s.lat, s.lng]).addTo(map);
+        list.innerHTML += `<div class="spot-card"><div class="spot-badge">ONLINE</div><div style="font-weight:700;">${s.name}</div><div style="font-size:10px; color:var(--muted); margin-top:5px;">${s.lat.toFixed(3)}, ${s.lng.toFixed(3)}</div></div>`;
+    });
+}
+render();
+
+map.on('click', e => {
+    const name = prompt("Node Name:");
+    if(name) {
+        spots.push({name, lat: e.latlng.lat, lng: e.latlng.lng});
         localStorage.setItem('ae_nodes', JSON.stringify(spots));
+        render();
     }
+});
 
-    setTimeout(render, 600);
+function switchView(id, el) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('view-' + id).classList.add('active');
+    el.classList.add('active');
+    if(id === 'map') setTimeout(() => map.invalidateSize(), 200);
+}
 
-    map.on('click', e => {
-        const name = prompt("Название нового узла:", `Node ${spots.length + 1}`);
-        if (name) {
-            spots.push({ name: name, lat: e.latlng.lat, lng: e.latlng.lng });
-            render();
-            showToast('Узел зафиксирован в системе');
-        }
-    });
+function showToast(m) {
+    const t = document.getElementById('toast'); t.textContent = m;
+    t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 2500);
+}
 
-    function switchView(id, el) {
-        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        document.getElementById('view-' + id).classList.add('active');
-        el.classList.add('active');
-        if (id === 'map') setTimeout(() => map.invalidateSize(), 200);
+if(navigator.getBattery) navigator.getBattery().then(b => {
+    const u = () => {
+        document.getElementById('fit-batt').textContent = Math.round(b.level * 100) + '%';
+        document.getElementById('net-status').textContent = b.charging ? 'Charging' : 'Online';
+    };
+    b.addEventListener('levelchange', u); u();
+});
+
+let st = parseInt(localStorage.getItem('ae_steps')) || 0;
+window.addEventListener('devicemotion', e => {
+    const a = e.accelerationIncludingGravity;
+    if(a && Math.sqrt(a.x*a.x + a.y*a.y + a.z*a.z) > 15) {
+        st++; document.getElementById('steps').textContent = st;
+        localStorage.setItem('ae_steps', st);
     }
-
-    function showToast(m) {
-        const t = document.getElementById('toast');
-        t.textContent = m;
-        t.style.display = 'block';
-        setTimeout(() => t.style.display = 'none', 2500);
-    }
-
-    // Battery
-    if (navigator.getBattery) {
-        navigator.getBattery().then(b => {
-            const update = () => {
-                const val = Math.round(b.level * 100) + '%';
-                document.getElementById('top-batt').textContent = val + ' ⚡';
-                document.getElementById('fit-batt').textContent = val;
-            };
-            b.addEventListener('levelchange', update);
-            update();
-        });
-    }
-
-    // Шагомер
-    let stepCount = parseInt(localStorage.getItem('ae_steps')) || 0;
-    document.getElementById('steps').textContent = stepCount;
-
-    window.addEventListener('devicemotion', e => {
-        const acc = e.accelerationIncludingGravity;
-        if (acc && Math.sqrt(acc.x**2 + acc.y**2 + acc.z**2) > 15) {
-            stepCount++;
-            document.getElementById('steps').textContent = stepCount;
-            localStorage.setItem('ae_steps', stepCount);
-        }
-    });
+});
 </script>
 </body>
 </html>
